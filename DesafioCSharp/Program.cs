@@ -27,7 +27,13 @@ namespace DesafioCSharp
                     }
                     else
                     {
-                        nome = Menu.EmpresaNaoCadastrada();
+                        int voltar;
+                        nome = Menu.EmpresaNaoCadastrada(out voltar);
+                        if (voltar == 88)
+                        {
+                            abaMenu = 0;
+                            continue;
+                        }
                         Empresa empresaCadastro = new Empresa(cnpj, nome);
                         empresas.Add(empresaCadastro);
                         empresa = empresas.Find(empresa => empresa.cnpj == cnpj);
@@ -46,7 +52,7 @@ namespace DesafioCSharp
                                 string cnpjCliente;
                                 string nomeCliente;
                                 bool emiteNota;
-                                int retorno = Menu.CadastraNota(false, out valor, out cnpjCliente, out nomeCliente, out emiteNota);
+                                int retorno = Menu.CadastraNota(false, out valor, out cnpjCliente, out nomeCliente, out emiteNota, out _);
                                 switch (retorno)
                                 {
                                     case 0:
@@ -68,41 +74,30 @@ namespace DesafioCSharp
                                         abaMenu = 1;
                                         continue;
                                     case 99:
-                                        abaMenu = 0;
+                                        abaMenu = 1;
                                         continue;
                                 }
                                 break;
                             }
                         case 2:
                             {
+                                DateTime data;
                                 double valor;
                                 string cnpjCliente;
                                 string nomeCliente;
                                 bool emiteNota;
-                                int retorno = Menu.CadastraNota(true, out valor, out cnpjCliente, out nomeCliente, out emiteNota);
+                                int retorno = Menu.CadastraNota(true, out valor, out cnpjCliente, out nomeCliente, out emiteNota, out data);
                                 switch (retorno)
                                 {
                                     case 0:
-                                        DateTime data = Menu.CadastrarNotasAnteriores();
                                         empresa.cadastrarNotaFiscal(empresa.cnpj, cnpjCliente, nomeCliente, valor, data);
-                                        abaMenu = 3;
-                                        if (emiteNota)
-                                        {
-                                            empresa.CalculaImposto(valor);
-                                            Console.ReadLine();
-                                            abaMenu = 1;
-                                            continue;
-                                        }
-                                        else
-                                        {
-                                            abaMenu = 1;
-                                            continue;
-                                        }
+                                        abaMenu = 1;
+                                        continue;
                                     case 88:
                                         abaMenu = 1;
                                         continue;
                                     case 99:
-                                        abaMenu = 0;
+                                        abaMenu = 1;
                                         continue;
                                 }
                                 break;

@@ -23,9 +23,13 @@ namespace DesafioCSharp
                 Console.Write("> ");
                 cnpj = Console.ReadLine();
                 converteu = Utils.ValidaCnpj(cnpj);
+                if (cnpj == "encerrar")
+                {
+                    Environment.Exit(0);
+                }
                 if (!converteu)
                 {
-                    Console.WriteLine("Nome inválido");
+                    Console.WriteLine("CNPJ inválido");
                     Thread.Sleep(2000);
                 }
             } while (!converteu);
@@ -33,7 +37,7 @@ namespace DesafioCSharp
             cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "");
             return cnpj;
         }
-        public static string EmpresaNaoCadastrada()
+        public static string EmpresaNaoCadastrada(out int voltar)
         {
             bool converteu = false;
             string nome;
@@ -46,13 +50,22 @@ namespace DesafioCSharp
                 Console.Write("> ");
                 nome = Console.ReadLine();
                 converteu = Utils.ValidaNome(nome);
+                if (nome == "encerrar")
+                {
+                    Environment.Exit(0);
+                }
+                if (nome == "voltar")
+                {
+                    voltar = 88;
+                    return "";
+                }
                 if (!converteu)
                 {
                     Console.WriteLine("Nome inválido");
                     Thread.Sleep(2000);
                 }
             } while (!converteu);
-
+            voltar = 0;
             return nome;
         }
         public static int EmpresaCadastrada()
@@ -96,8 +109,9 @@ namespace DesafioCSharp
             } while (!converteu);
             return opcao;
         }
-        public static int CadastraNota(bool notaAnterior, out double valor, out string cnpjCliente, out string nomeCliente, out bool emiteNota)
+        public static int CadastraNota(bool notaAnterior, out double valor, out string cnpjCliente, out string nomeCliente, out bool emiteNota, out DateTime dataConvertida)
         {
+            dataConvertida = default;
             valor = 0;
             cnpjCliente = null;
             nomeCliente = null;
@@ -126,12 +140,14 @@ namespace DesafioCSharp
                                 cnpjCliente = "";
                                 nomeCliente = "";
                                 emiteNota = false;
+                                dataConvertida = DateTime.Now;
                                 return 88;
                             case "cancelar":
                                 valor = 0;
                                 cnpjCliente = "";
                                 nomeCliente = "";
                                 emiteNota = false;
+                                dataConvertida = DateTime.Now;
                                 return 99;
                             case "encerrar":
                                 Environment.Exit(0);
@@ -172,6 +188,7 @@ namespace DesafioCSharp
                                 cnpjCliente = "";
                                 nomeCliente = "";
                                 emiteNota = false;
+                                dataConvertida = DateTime.Now;
                                 return 99;
                             case "encerrar":
                                 Environment.Exit(0);
@@ -223,6 +240,7 @@ namespace DesafioCSharp
                                 cnpjCliente = "";
                                 nomeCliente = "";
                                 emiteNota = false;
+                                dataConvertida = DateTime.Now;
                                 return 99;
                             case "encerrar":
                                 Environment.Exit(0);
@@ -249,13 +267,69 @@ namespace DesafioCSharp
                     {
                         continue;
                     }
-                    if (notaAnterior)
-                    {
-                        fluxoCompleto = true;
-                    }
                     indexTab++;
                 }
                 if (indexTab == 3)
+                {
+                    if (notaAnterior)
+                    {
+                        bool voltar = false;
+                        bool converteu = false;
+                        do
+                        {
+                            Console.Clear();
+                            Console.WriteLine("**********************************************");
+                            Console.WriteLine("****     Digite a data de emissão         ****");
+                            Console.WriteLine("**********************************************");
+                            Console.Write("> ");
+                            string data = Console.ReadLine();
+                            converteu = Utils.ValidaData(data);
+                            DateTime.TryParse(data, out dataConvertida);
+                            switch (data)
+                            {
+                                case "voltar":
+                                    voltar = true;
+                                    indexTab--;
+                                    break;
+                                case "cancelar":
+                                    valor = 0;
+                                    cnpjCliente = "";
+                                    nomeCliente = "";
+                                    emiteNota = false;
+                                    dataConvertida = DateTime.Now;
+                                    return 99;
+                                case "encerrar":
+                                    Environment.Exit(0);
+                                    break;
+                                default:
+                                    if (!converteu)
+                                    {
+                                        Console.WriteLine("Data inválida");
+                                        Thread.Sleep(2000);
+                                    }
+                                    break;
+                            }
+                            if (voltar)
+                            {
+                                break;
+                            }
+                        } while (!converteu);
+                        if (voltar)
+                        {
+                            continue;
+                        }
+                        if (notaAnterior)
+                        {
+                            fluxoCompleto = true;
+                        }
+                        indexTab++;
+                    }
+                    else
+                    {
+                        indexTab++;
+                    }
+                }
+                if (indexTab == 4)
                 {
                     bool voltar = false;
                     bool converteu = false;
@@ -280,6 +354,7 @@ namespace DesafioCSharp
                                     cnpjCliente = "";
                                     nomeCliente = "";
                                     emiteNota = false;
+                                    dataConvertida = DateTime.Now;
                                     return 99;
                                 case "encerrar":
                                     Environment.Exit(0);
@@ -313,29 +388,6 @@ namespace DesafioCSharp
                 }
             }
             return 0;
-        }
-        public static DateTime CadastrarNotasAnteriores()
-        {
-            bool converteu = false;
-            DateTime dataConvertida;
-            do
-            {
-                Console.Clear();
-                Console.WriteLine("**********************************************");
-                Console.WriteLine("****     Digite a data de emissão         ****");
-                Console.WriteLine("**********************************************");
-                Console.Write("> ");
-                string data = Console.ReadLine();
-                converteu = Utils.ValidaData(data);
-                DateTime.TryParse(data, out dataConvertida);
-                if (!converteu)
-                {
-                    Console.WriteLine("Data inválida");
-                    Thread.Sleep(2000);
-                }
-            } while (!converteu);
-
-            return dataConvertida;
         }
         public static int ConsultaNotasAnteriores(out string itemParaConsulta)
         {
@@ -410,7 +462,7 @@ namespace DesafioCSharp
                                 }
                                 else if (!Utils.ValidaCnpj(cnpj))
                                 {
-                                    Console.WriteLine("CNPJ inálido");
+                                    Console.WriteLine("CNPJ inválido");
                                     Thread.Sleep(2000);
                                 }
 
