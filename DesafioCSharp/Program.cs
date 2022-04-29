@@ -136,7 +136,7 @@ namespace DesafioCSharp
                                         List<NotaFiscal> notas = empresa.consultaNotasAnteriores("mes", dadosParaConsulta);
                                         if (notas.Count == 0)
                                         {
-                                            Console.WriteLine("Cliente não encontrado");
+                                            Console.WriteLine("Não existem notas emitidas nesse mês");
                                             Thread.Sleep(2000);
                                             abaMenu = 1;
                                             break;
